@@ -397,6 +397,8 @@ TEST(FTPServer, CdGet) {
     write(client_fd, cmd_str.c_str(), cmd_str.length());
     usleep(500000);
 
+    std::filesystem::path old_dir = tmp_dir_ser;
+
     /** Generate Directory **/
     uint32_t random_dir = rand() % 1000;
     std::filesystem::create_directory(tmp_dir_ser / std::to_string(random_dir));
@@ -428,6 +430,8 @@ TEST(FTPServer, CdGet) {
     } else get_content = ~0;
     EXPECT_EQ(get_content, random_content);
 
+    tmp_dir_ser = old_dir;
+
     clearProcess(client_pid);
     clearProcess(server_pid);
 }
@@ -443,6 +447,8 @@ TEST(FTPServer, CdPut) {
     cmd_str = "open 127.0.0.1 " + std::to_string(server_port) + "\n";
     write(client_fd, cmd_str.c_str(), cmd_str.length());
     usleep(500000);
+
+    std::filesystem::path old_dir = tmp_dir_ser;
 
     /** Generate Directory **/
     uint32_t random_dir = rand() % 1000;
@@ -474,6 +480,8 @@ TEST(FTPServer, CdPut) {
         fin.close();
     } else EXPECT_EQ(0, 1);
     EXPECT_EQ(get_content, random_content);
+
+    tmp_dir_ser = old_dir;
 
     clearProcess(client_pid);
     clearProcess(server_pid);
