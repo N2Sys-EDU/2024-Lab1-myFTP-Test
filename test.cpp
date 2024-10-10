@@ -9,6 +9,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <fcntl.h>
+#include <sys/wait.h>
 
 pid_t startSubProcess(int *writefd, std::string exe, std::vector<std::string> &&args, std::filesystem::path &working_directory, int need_kill=1) {
     std::filesystem::remove_all(working_directory);
@@ -52,6 +53,8 @@ pid_t startSubProcess(int *writefd, std::string exe, std::vector<std::string> &&
             close(write_fds[0]);
         }
         usleep(500000); // Sleep 10 ms till STDIN/OUT_FILENO Correct
+        pid_t child_pid = waitpid(status, NULL, WNOHANG);
+        EXPECT_EQ(child_pid, 0);
     }
     return status;
 }
